@@ -14,8 +14,8 @@ func NewEngine(logger *zap.Logger) (*Engine, error) {
 	}
 	mb := make(map[string]string)
 	engine := &Engine{
-		memoryBox: mb,
-		logger:    logger,
+		data:   mb,
+		logger: logger,
 	}
 
 	return engine, nil
@@ -23,18 +23,19 @@ func NewEngine(logger *zap.Logger) (*Engine, error) {
 
 // Engine - хранит данные в памяти используя map
 type Engine struct {
-	memoryBox map[string]string
-	logger    *zap.Logger
+	data   map[string]string
+	logger *zap.Logger
 }
 
 // Set - сохраняет значение по ключу
 func (e *Engine) Set(ctx context.Context, key, value string) {
-	e.memoryBox[key] = value
+	e.data[key] = value
+	e.logger.Debug("successfull set query")
 }
 
 // Get - возвращает значение по ключу
 func (e *Engine) Get(ctx context.Context, key string) (string, bool) {
-	v, exist := e.memoryBox[key]
+	v, exist := e.data[key]
 	if exist {
 		e.logger.Debug("successfull get query")
 	} else {
@@ -46,5 +47,6 @@ func (e *Engine) Get(ctx context.Context, key string) (string, bool) {
 
 // Del - удаляет значение по ключу
 func (e *Engine) Del(ctx context.Context, key string) {
-	delete(e.memoryBox, key)
+	delete(e.data, key)
+	e.logger.Debug("successfull del query")
 }

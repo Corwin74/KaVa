@@ -8,24 +8,20 @@ import (
 	"kava/internal/database/compute"
 	"kava/internal/database/storage"
 	"kava/internal/database/storage/engine/in_memory"
-	"kava/internal/initalization"
+	initialization "kava/internal/initalization"
 	"log"
 	"os"
 
 	"go.uber.org/zap"
 )
 
-
 func main() {
-	
-	var res string
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := context.Background()
 
 	logger, err := initialization.CreateLogger()
 	if err != nil {
-			log.Fatal(err)
+		log.Fatal(err)
 	}
 	compute, err := compute.NewCompute(logger)
 	if err != nil {
@@ -44,6 +40,9 @@ func main() {
 		log.Fatal(err)
 	}
 	reader := bufio.NewReader(os.Stdin)
+
+	var res string
+
 	for {
 		query, err := reader.ReadString('\n')
 		if err != nil {

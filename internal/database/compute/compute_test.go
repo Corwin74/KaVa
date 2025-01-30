@@ -76,7 +76,7 @@ func TestParse(t *testing.T) {
 		},
 		"GET without key": {
 			queryStr: "GET",
-			expectedErr: errInvalidQuery,
+			expectedErr: errInvalidArguments,
 		},
 		"GET with extra argument": {
 			queryStr: "GET key 22",
@@ -84,7 +84,7 @@ func TestParse(t *testing.T) {
 		},		
 		"DEL without key": {
 			queryStr: "DEL",
-			expectedErr: errInvalidQuery,
+			expectedErr: errInvalidArguments,
 		},		
 		"DEL with extra argument": {
 			queryStr: "DEL key value",
@@ -104,7 +104,7 @@ func TestParse(t *testing.T) {
 		},
 		"SET without argument": {
 			queryStr: "SET",
-			expectedErr: errInvalidQuery,
+			expectedErr: errInvalidArguments,
 		},			
 		"SET query": {
 			queryStr: "SET key:value value",
