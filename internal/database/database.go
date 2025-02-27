@@ -32,7 +32,7 @@ func NewDatabase(computeLayer computeLayer, storageLayer storageLayer, logger *z
 	if computeLayer == nil {
 		return nil, errors.New("compute layer is invalid")
 	}
-	
+
 	if storageLayer == nil {
 		return nil, errors.New("storage layer is invalid")
 	}
@@ -44,7 +44,7 @@ func NewDatabase(computeLayer computeLayer, storageLayer storageLayer, logger *z
 	return &Database{
 		computeLayer: computeLayer,
 		storageLayer: storageLayer,
-		logger: logger,
+		logger:       logger,
 	}, nil
 }
 
@@ -78,17 +78,16 @@ func (d *Database) handleSetQuery(ctx context.Context, query compute.Query) stri
 	return "[ok]"
 }
 
-func(d *Database) handleGetQuery(ctx context.Context, query compute.Query) string {
+func (d *Database) handleGetQuery(ctx context.Context, query compute.Query) string {
 	value, err := d.storageLayer.Get(ctx, query.GetKey())
 	if err == nil {
 		return fmt.Sprintf("[ok] %s", value)
 	}
 	if err == storage.ErrorNotExist {
-		return "[key not exist]"
+		return fmt.Sprintf("[error] %s", err.Error())
 	}
 	return fmt.Sprintf("[error] %s", err.Error())
-	}
-
+}
 
 func (d *Database) handleDelQuery(ctx context.Context, query compute.Query) string {
 	if err := d.storageLayer.Del(ctx, query.GetKey()); err != nil {

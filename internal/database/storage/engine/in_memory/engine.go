@@ -3,6 +3,7 @@ package in_memory
 import (
 	"context"
 	"errors"
+	"sync"
 
 	"go.uber.org/zap"
 )
@@ -23,19 +24,24 @@ func NewEngine(logger *zap.Logger) (*Engine, error) {
 
 // Engine - хранит данные в памяти используя map
 type Engine struct {
+	mu     sync.RWMutex
 	data   map[string]string
 	logger *zap.Logger
 }
 
 // Set - сохраняет значение по ключу
 func (e *Engine) Set(ctx context.Context, key, value string) {
+	e.mu.Lock()
 	e.data[key] = value
+	e.mu.Unlock()
 	e.logger.Debug("successfull set query")
 }
 
 // Get - возвращает значение по ключу
 func (e *Engine) Get(ctx context.Context, key string) (string, bool) {
+	e.mu.RLock()
 	v, exist := e.data[key]
+	e.mu.RUnlock()
 	if exist {
 		e.logger.Debug("successfull get query")
 	} else {
@@ -47,6 +53,8 @@ func (e *Engine) Get(ctx context.Context, key string) (string, bool) {
 
 // Del - удаляет значение по ключу
 func (e *Engine) Del(ctx context.Context, key string) {
+	e.mu.Lock()
 	delete(e.data, key)
+	e.mu.Unlock()
 	e.logger.Debug("successfull del query")
 }
