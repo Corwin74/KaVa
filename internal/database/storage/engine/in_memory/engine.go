@@ -32,16 +32,18 @@ type Engine struct {
 // Set - сохраняет значение по ключу
 func (e *Engine) Set(ctx context.Context, key, value string) {
 	e.mu.Lock()
+	defer e.mu.Unlock()
+
 	e.data[key] = value
-	e.mu.Unlock()
 	e.logger.Debug("successfull set query")
 }
 
 // Get - возвращает значение по ключу
 func (e *Engine) Get(ctx context.Context, key string) (string, bool) {
 	e.mu.RLock()
+	defer e.mu.RUnlock()
+
 	v, exist := e.data[key]
-	e.mu.RUnlock()
 	if exist {
 		e.logger.Debug("successfull get query")
 	} else {

@@ -45,10 +45,7 @@ func NewTCPServer(cfg *configuration.TCPServerConfig, database Database, logger 
 	}
 
 	server.listener = listener
-
-	if cfg.MaxConnections != 0 {
-		server.maxConnections = cfg.MaxConnections
-	}
+	server.maxConnections = cfg.MaxConnections
 	server.semaphore = concurency.NewSemaphore(cfg.MaxConnections)
 
 	return server, nil

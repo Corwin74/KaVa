@@ -6,14 +6,12 @@ import (
 	"kava/internal/configuration"
 	"kava/internal/database"
 	"kava/internal/database/compute"
-	"kava/internal/database/server"
 	"kava/internal/database/storage"
 	"kava/internal/database/storage/engine/in_memory"
 	initialization "kava/internal/initalization"
 	"log"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 )
 
@@ -57,30 +55,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var wg sync.WaitGroup
+	servers := initialization.NewServers(cfg, database, logger)
 
-	for _, cfg := range cfg.Servers {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-
-			switch cfg := cfg.(type) {
-			case *configuration.TCPServerConfig:
-				tcpServer, err := server.NewTCPServer(cfg, database, logger)
-				if err != nil {
-					log.Printf("failed to create tcp server: %v", err)
-					return
-				}
-				tcpServer.Start(ctx)
-			case *configuration.ConsoleConfig:
-				console, err := server.NewConsole(os.Stdin, os.Stdout, database, logger)
-				if err != nil {
-					log.Printf("failed to create console: %v", err)
-					return
-				}
-				console.Start(ctx)
-			}
-		}()
+	for _, server := range servers {
+		server.Start(ctx)
 	}
-	wg.Wait()
+
 }
