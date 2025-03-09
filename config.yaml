@@ -6,7 +6,7 @@ servers:
     name: main
     port: 8080
     host: localhost
-    max_connections: 1
+    max_connections: 5
     max_message_size: 4KB
     idle_timeout: 5m
 
@@ -14,5 +14,11 @@ servers:
     name:  console-service
 
 logging:
-  level: "info"
+  level: "debug"
   output: "output.log"
+
+wal:
+  flushing_batch_length: 100
+  flushing_batch_timeout: "3s"
+  max_segment_size: "4KB"
+  data_directory: "wal_data"

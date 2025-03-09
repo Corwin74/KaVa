@@ -35,7 +35,11 @@ func (e *Engine) Set(ctx context.Context, key, value string) {
 	defer e.mu.Unlock()
 
 	e.data[key] = value
-	e.logger.Debug("successfull set query")
+	e.logger.Debug(
+		"successfull set query",
+		zap.String("msg", "SET"),
+		zap.String("key", key),
+		zap.String("value", value))
 }
 
 // Get - возвращает значение по ключу
@@ -45,9 +49,17 @@ func (e *Engine) Get(ctx context.Context, key string) (string, bool) {
 
 	v, exist := e.data[key]
 	if exist {
-		e.logger.Debug("successfull get query")
+		e.logger.Debug(
+			"successfull get query",
+			zap.String("msg", "GET"),
+			zap.String("key", key),
+		)
 	} else {
-		e.logger.Debug("key not found")
+		e.logger.Debug(
+			"key not found",
+			zap.String("msg", "key not found"),
+			zap.String("key", key),
+		)
 	}
 
 	return v, exist
@@ -58,5 +70,9 @@ func (e *Engine) Del(ctx context.Context, key string) {
 	e.mu.Lock()
 	delete(e.data, key)
 	e.mu.Unlock()
-	e.logger.Debug("successfull del query")
+	e.logger.Debug(
+		"successfull del query",
+		zap.String("msg", "DEL"),
+		zap.String("key", key),
+	)
 }
