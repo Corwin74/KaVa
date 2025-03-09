@@ -29,6 +29,12 @@ servers:
 logging:
   level: "info"
   output: "output.log"
+
+wal:
+  flushing_batch_length: 101
+  flushing_batch_timeout: "7s"
+  max_segment_size: "3KB"
+  data_directory: "wal_dataz"
 `
 
 func TestLoad(t *testing.T) {
@@ -76,6 +82,12 @@ func TestLoad(t *testing.T) {
 					},
 				},
 				Logging: &LoggingConfig{Level: "info", Output: "output.log"},
+				WAL: &WALConfig{
+					FlushingBatchLength:  101,
+					FlushingBatchTimeout: 7 * time.Second,
+					MaxSegmentSize:       3072,
+					DataDirectory:        "wal_dataz",
+				},
 			},
 		},
 	}

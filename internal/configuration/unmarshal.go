@@ -8,7 +8,7 @@ import (
 )
 
 // UnmarshalYAML реализует интерфейс yaml.Unmarshaler
-func (m *MessageSize) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (m *ByteSize) UnmarshalYAML(unmarshal func(any) error) error {
 	// Сначала пробуем распарсить как строку
 	var strSize string
 	if err := unmarshal(&strSize); err == nil {
@@ -17,7 +17,7 @@ func (m *MessageSize) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		if err != nil {
 			return err
 		}
-		*m = MessageSize(size)
+		*m = ByteSize(size)
 		return nil
 	}
 
@@ -27,7 +27,7 @@ func (m *MessageSize) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 
-	*m = MessageSize(size)
+	*m = ByteSize(size)
 
 	return nil
 }

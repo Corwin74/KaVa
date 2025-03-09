@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 )
 
@@ -45,7 +46,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	storage, err := storage.NewStorage(engine, logger)
+	wal, err := initialization.CreateWAL(cfg.WAL, logger)
+	if err != nil {
+		log.Fatal("failed to initialize wal")
+	}
+
+	wal.Start(ctx)
+	
+	storage, err := storage.NewStorage(engine, wal, logger)
 	if err != nil {
 		log.Fatal(err)
 
@@ -57,8 +65,13 @@ func main() {
 
 	servers := initialization.NewServers(cfg, database, logger)
 
+	var wg sync.WaitGroup
 	for _, server := range servers {
-		server.Start(ctx)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			server.Start(ctx)
+		}()
 	}
-
+	wg.Wait()
 }

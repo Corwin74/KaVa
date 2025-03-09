@@ -1,4 +1,4 @@
-package concurency
+package concurrency
 
 // Semaphore -- ограничивает количество конкуретных задач в момент времени
 type Semaphore struct {
