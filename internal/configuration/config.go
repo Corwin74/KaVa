@@ -31,17 +31,13 @@ var (
 	supportedEngineTypes = []string{"in_memory", "persistent"}
 )
 
-// MessageSize - custom тип для срабатывания UnMarshal
-type MessageSize int
+// ByteSize - custom тип для срабатывания UnMarshal
+type ByteSize int
 
 // ServerConfig - базовый интерфейс для всех конфигураций серверов
 type ServerConfig interface {
 	// getType возвращает тип сервера
 	getType() string
-
-	// Validate проверяет корректность конфигурации
-	// Validate() error
-
 	// getName возвращает имя сервера
 	getName() string
 }
@@ -52,6 +48,7 @@ type ServerConfigs []ServerConfig
 // Config -- корневая структура
 type Config struct {
 	Engine  *EngineConfig  `yaml:"engine"`
+	WAL     *WALConfig     `yaml:"wal"`
 	Servers ServerConfigs  `yaml:"servers"`
 	Logging *LoggingConfig `yaml:"logging"`
 }
@@ -79,8 +76,15 @@ type TCPServerConfig struct {
 	Port           int           `yaml:"port"`
 	Host           string        `yaml:"host"`
 	MaxConnections int           `yaml:"max_connections"`
-	MaxMessageSize MessageSize   `yaml:"max_message_size"`
+	MaxMessageSize ByteSize      `yaml:"max_message_size"`
 	IdleTimeout    time.Duration `yaml:"idle_timeout"`
+}
+
+type WALConfig struct {
+	FlushingBatchLength  int           `yaml:"flushing_batch_length"`
+	FlushingBatchTimeout time.Duration `yaml:"flushing_batch_timeout"`
+	MaxSegmentSize       ByteSize      `yaml:"max_segment_size"`
+	DataDirectory        string        `yaml:"data_directory"`
 }
 
 // Load -- загружает информацию из файла

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"kava/internal/configuration"
-	"kava/pkg/concurency"
+	"kava/pkg/concurrency"
 	"net"
 	"time"
 
@@ -15,10 +15,10 @@ import (
 
 // TCPServer -- структура сервера
 type TCPServer struct {
-	semaphore      concurency.Semaphore
+	semaphore      concurrency.Semaphore
 	listener       net.Listener
 	maxConnections int
-	bufferSize     configuration.MessageSize
+	bufferSize     configuration.ByteSize
 	idleTimeout    time.Duration
 	database       Database
 	logger         *zap.Logger
@@ -32,9 +32,9 @@ func NewTCPServer(cfg *configuration.TCPServerConfig, database Database, logger 
 	}
 
 	server := &TCPServer{
-		logger:     logger,
-		database:   database,
-		bufferSize: cfg.MaxMessageSize,
+		logger:      logger,
+		database:    database,
+		bufferSize:  cfg.MaxMessageSize,
 		idleTimeout: cfg.IdleTimeout,
 	}
 
@@ -46,7 +46,7 @@ func NewTCPServer(cfg *configuration.TCPServerConfig, database Database, logger 
 
 	server.listener = listener
 	server.maxConnections = cfg.MaxConnections
-	server.semaphore = concurency.NewSemaphore(cfg.MaxConnections)
+	server.semaphore = concurrency.NewSemaphore(cfg.MaxConnections)
 
 	return server, nil
 }
